@@ -23,7 +23,8 @@ To build the TURN server:
     	openssl-devel, 
     	libevent-devel >= 2.0.0, 
        	sqlite, sqlite-devel,
-       	mysql-devel (or mariadb-devel), postgresql-devel, hiredis-devel
+       	mysql-devel (or mariadb-devel), postgresql-devel, hiredis-devel,
+       	libcurl-devel
     4) $ mkdir ~/rpmbuild
     5) $ mkdir ~/rpmbuild/SOURCES
     6) Export the TURN server from Github, "git clone https://github.com/coturn/coturn.git"

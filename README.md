@@ -77,6 +77,7 @@ Supported TURN authentication mechanisms:
   * 'classic' long-term credentials mechanism;
   * TURN REST API (a modification of the long-term mechanism, for time-limited secret-based authentication, for WebRTC applications: http://tools.ietf.org/html/draft-uberti-behave-turn-rest-00);
   * experimental third-party oAuth-based client authorization option;
+  * experimental AUTH URL support to fetch A1 hash for authentication;
 
 When used as a part of an ICE solution, for VoIP connectivity, this TURN server can handle thousands simultaneous calls per CPU (when TURN protocol is used) or tens of thousands calls when only STUN protocol is used. For virtually unlimited scalability a load balancing scheme can be used. The load balancing can be implemented with the following tools (either one or a combination of them):
 

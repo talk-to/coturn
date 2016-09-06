@@ -5,6 +5,7 @@ Version 4.5.0.5 'dan Eider':
 	- "read_timeout" option support for MySQL.
 	- new NAT behavior discovery utilty. 
 	- new OAuth access_token encrypt/decrypt utilty. 
+	- AUTH URL support using libcurl.
 
 08/20/2016 Oleg Moskalenko <mom040267@gmail.com>
 Version 4.5.0.4 'dan Eider':

@@ -55,3 +55,7 @@ Bradley T. Hughes <bradleythughes@fastmail.fm> :
 Mészáros Mihály <bakfitty@gmail.com> :
         OAuth utility, NAT behavior Discovery
         (since v4.5.0.4)
+
+Manav Rathi <manav.r@directi.com> :
+	AUTH URL
+	(since v4.5.0.5)

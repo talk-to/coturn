@@ -593,6 +593,14 @@ the oAuth authentication purposes.
 The default value is the realm name.
 .TP
 .B
+\fB\-\-auth\-url\fP
+URL to use for obtaining the A1 hash for authentication.
+If this parameter is specified, then a HTTP GET request is made to
+this URL with the user and realm values. The A1 hash contained in the
+response is used to compute the HMAC for authentication. See the "AUTH
+URL" section below for the request response formats.
+.TP
+.B
 \fB\-\-cert\fP
 Certificate file, PEM format. Same file 
 search rules applied as for the configuration 
@@ -947,6 +955,35 @@ A very important thing is that the nonce must be totally random and it must be
 different for different clients and different sessions. 
 .PP
 ===================================
+.SH AUTH URL
+
+The \fIturnserver\fP can perform a HTTP(S) request for authentication.
+
+This feature is enabled if the \fB-\-auth\-url\fP \fIoption\fP is
+specified. When authentication is required, a GET request is made to
+the auth URL. The "user" and "realm" values are passed as query
+parameters.
+
+	GET /auth-uri?user=foo&realm=bar HTTP/1.1
+
+The response is expected to be a JSON object with a key named "result"
+containing the hexadecimal representation of the A1 hash.
+
+	HTTP/1.1 200 OK
+	Content-Type: application/json
+
+	{ "result": "abcd" }
+
+Any other response is treated as an error.
+
+The results are not cached.
+
+The computation of A1 hash is described in Section 15.4 of RFC 5389.
+
+	md5 ( username ':' realm ':' password )
+
+.PP
+===================================
 .SH DATABASES
 
 For the user database, the \fIturnserver\fP has the following \fIoptions\fP:
@@ -1191,3 +1228,5 @@ Federico Pinna <fpinna@vivocha.com>
 Bradley T. Hughes <bradleythughes@fastmail.fm>
 .PP
 Mihaly Meszaros <bakfitty@gmail.com>
+.PP
+Manav Rathi <manav.r@directi.com>

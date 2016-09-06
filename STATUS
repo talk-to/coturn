@@ -126,6 +126,8 @@ supported in the client library).
 
 55) Multi-tenant implementation based upon third-party authorization
 (oAuth).
- 
+
+56) Using a HTTP(S) URL for authentication.
+
 Things to be implemented in future (the development roadmap) 
 are described in the TODO file.

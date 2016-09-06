@@ -815,6 +815,10 @@ static void cli_print_configuration(struct cli_session* cs)
 		if(turn_params.use_auth_secret_with_timestamp && turn_params.rest_api_separator)
 			cli_print_uint(cs,turn_params.rest_api_separator,"TURN REST API separator ASCII number",0);
 
+#if !defined(TURN_NO_AUTH_URL)
+		cli_print_str(cs, turn_params.auth_url, "AUTH URL", 0);
+#endif
+
 		myprintf(cs,"\n");
 
 		cli_print_uint(cs,(unsigned long)cs->rp->status.total_current_allocs,"total-current-allocs",0);

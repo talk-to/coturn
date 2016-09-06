@@ -23,6 +23,8 @@ cleanup() {
 	rm -rf ${E_TMPCPROGO}
 	rm -rf ${HR_TMPCPROGC}
 	rm -rf ${HR_TMPCPROGB}
+	rm -rf ${LC_TMPCPROGC}
+	rm -rf ${LC_TMPCPROGB}
 	rm -rf ${TMPCADDRPROGO}
 }
 
@@ -82,6 +84,30 @@ testhiredis() {
     else
 		DBCFLAGS="${DBCFLAGS} ${HIREDISCFLAGS}"
 		DBLIBS="${DBLIBS} ${HIREDISLIBS}"
+		return 1
+    fi
+}
+
+testlibcurl() {
+    type curl-config 2>>/dev/null
+    ER=$?
+    if [ ${ER} -eq 0 ] ; then
+        LIBCURLCFLAGS="${LIBCURLCFLAGS} `curl-config --cflags`"
+        LIBCURLLIBS="${LIBCURLLIBS} `curl-config --libs`"
+    fi
+
+    ${CC} ${LC_TMPCPROGC} -o ${LC_TMPCPROGB} ${OSCFLAGS} ${DBCFLAGS} ${LIBCURLCFLAGS} ${DBLIBS} ${LIBCURLLIBS} ${OSLIBS} 2>>/dev/null
+    ER=$?
+    if ! [ ${ER} -eq 0 ] ; then
+		${ECHO_CMD}
+		${ECHO_CMD} "LIBCURL DEVELOPMENT LIBRARY (libcurl.*) AND/OR HEADERS (curl/*.h)"
+		${ECHO_CMD} "	ARE NOT INSTALLED PROPERLY ON THIS SYSTEM."
+		${ECHO_CMD} "	THAT'S OK BUT THE TURN SERVER IS BUILDING WITHOUT AUTH URL SUPPORT."
+		${ECHO_CMD}
+		return 0
+    else
+		DBCFLAGS="${DBCFLAGS} ${LIBCURLCFLAGS}"
+		DBLIBS="${DBLIBS} ${LIBCURLLIBS}"
 		return 1
     fi
 }
@@ -731,6 +757,19 @@ int main(int argc, char** argv) {
 }
 !
 
+LC_TMPCPROG=__test__ccomp__libcurl__$$
+LC_TMPCPROGC=${TMPDIR}/${LC_TMPCPROG}.c
+LC_TMPCPROGB=${TMPDIR}/${LC_TMPCPROG}
+
+cat > ${LC_TMPCPROGC} <<!
+#include <stdlib.h>
+#include <curl/curl.h>
+int main(int argc, char** argv) {
+	curl_version();
+    return (int)(argv[argc][0]);
+}
+!
+
 PQ_TMPCPROG=__test__ccomp__libpq__$$
 PQ_TMPCPROGC=${TMPDIR}/${PQ_TMPCPROG}.c
 PQ_TMPCPROGB=${TMPDIR}/${PQ_TMPCPROG}
@@ -1133,6 +1172,27 @@ else
 
 fi
 
+###########################
+# Test libcurl
+###########################
+
+if [ -z "${TURN_NO_LIBCURL}" ] ; then
+
+	testlibcurl
+
+	ER=$?
+	if ! [ ${ER} -eq 0 ] ; then
+  		${ECHO_CMD} "libcurl found."
+	else
+  		TURN_NO_LIBCURL="-DTURN_NO_LIBCURL -DTURN_NO_AUTH_URL"
+	fi
+
+else
+
+	TURN_NO_LIBCURL="-DTURN_NO_LIBCURL -DTURN_NO_AUTH_URL"
+
+fi
+
 ###############################
 # LDCONFIG
 ###############################
@@ -1200,7 +1260,7 @@ ${ECHO_CMD} "LDFLAGS += ${OSLIBS}" >> Makefile
 ${ECHO_CMD} "DBLIBS += ${DBLIBS}" >> Makefile
 ${ECHO_CMD} "CFLAGS += ${OSCFLAGS}" >> Makefile
 ${ECHO_CMD} "CPPFLAGS = ${CPPFLAGS}" >> Makefile
-${ECHO_CMD} "DBCFLAGS += ${DBCFLAGS} ${TURN_NO_PQ} ${TURN_NO_MYSQL} ${TURN_NO_SQLITE} ${TURN_NO_MONGO} ${TURN_NO_HIREDIS}" >> Makefile
+${ECHO_CMD} "DBCFLAGS += ${DBCFLAGS} ${TURN_NO_PQ} ${TURN_NO_MYSQL} ${TURN_NO_SQLITE} ${TURN_NO_MONGO} ${TURN_NO_HIREDIS} ${TURN_NO_LIBCURL}" >> Makefile
 ${ECHO_CMD} "#" >> Makefile
 ${ECHO_CMD} "PORTNAME = ${PORTNAME}" >> Makefile
 ${ECHO_CMD} "PREFIX = ${PREFIX}" >> Makefile

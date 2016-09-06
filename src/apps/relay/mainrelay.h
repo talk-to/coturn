@@ -298,6 +298,10 @@ typedef struct _turn_params_ {
 
   default_users_db_t default_users_db;
 
+/////// Auth URL ///////////
+
+  char auth_url[1025];
+
 /////// CPUs //////////////
 
   unsigned long cpus;

@@ -11,9 +11,11 @@ Source0:	http://turnserver.open-sys.org/downloads/v%{version}/%{name}-%{version}
 BuildRequires:	gcc, make, redhat-rpm-config, sqlite-devel
 BuildRequires:	openssl-devel, libevent-devel >= 2.0.0, postgresql-devel
 BuildRequires:	hiredis-devel
+BuildRequires:	libcurl-devel
 Requires:	openssl, sqlite, libevent >= 2.0.0, mysql-libs, postgresql-libs
 Requires:	hiredis, perl-DBI, perl-libwww-perl
 Requires:	telnet
+Requires:	libcurl
 %if 0%{?el6}
 BuildRequires:	epel-release, mysql-devel
 Requires:	epel-release, mysql-libs
@@ -64,6 +66,7 @@ Supported TURN authentication mechanisms:
 - long-term
 - TURN REST API (a modification of the long-term mechanism, for time-limited
   secret-based authentication, for WebRTC applications)
+- AUTH URL (HTTP for authentication)
 
 The load balancing can be implemented with the following tools (either one or a
 combination of them):

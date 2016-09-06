@@ -54,6 +54,7 @@
 #include "userdb.h"
 #include "dbdrivers/dbdriver.h"
 #include "mainrelay.h"
+#include "auth_url_libcurl.h"
 
 #include "ns_turn_utils.h"
 
@@ -624,6 +625,13 @@ int get_user_key(int in_oauth, int *out_oauth, int *max_session_time, u08bits *u
 		size_t sz = get_hmackey_size(SHATYPE_DEFAULT);
 		ns_bcopy(ukey,key,sz);
 		return 0;
+	}
+
+	if (turn_params.auth_url[0]) {
+		ret = auth_url_get_user_key(usname, realm, key);
+		if (ret == 0) {
+			return 0;
+		}
 	}
 
 	const turn_dbdriver_t * dbd = get_dbdriver();

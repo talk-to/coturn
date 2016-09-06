@@ -29,6 +29,7 @@
  */
 
 #include "mainrelay.h"
+#include "auth_url_libcurl.h"
 
 #if (defined LIBRESSL_VERSION_NUMBER && OPENSSL_VERSION_NUMBER == 0x20000000L)
 #undef OPENSSL_VERSION_NUMBER
@@ -127,6 +128,8 @@ LOW_DEFAULT_PORTS_BOUNDARY,HIGH_DEFAULT_PORTS_BOUNDARY,0,0,0,"",
 0,0,0,0,0,':',0,0,TURN_CREDENTIALS_NONE,0,0,0,0,0,0,
 ///////////// Users DB //////////////
 { (TURN_USERDB_TYPE)0, {"\0"}, {0,NULL, {NULL,0}} },
+///////////// Auth URL //////////////
+"",
 ///////////// CPUs //////////////////
 DEFAULT_CPUS_NUMBER
 };
@@ -487,6 +490,14 @@ static char Usage[] = "Usage: turnserver [options]\n"
 "		                                and delivering traffic and allocation event notifications.\n"
 "						The connection string has the same parameters as redis-userdb connection string.\n"
 #endif
+#if !defined(TURN_NO_AUTH_URL)
+" --auth-url		<url>			HTTP URL to use for authentication.\n"
+"						If this parameter is specified, then a HTTP\n"
+"						GET request is made to this URL with the user and realm\n"
+"						values. The A1 hash contained in the response is used to\n"
+"						compute the HMAC for authentication. See the AUTH URL section for\n"
+"						the request response formats.\n"
+#endif
 " --use-auth-secret				TURN REST API flag.\n"
 "						Flag that sets a special authorization option that is based upon authentication secret\n"
 "						(TURN Server REST API, see TURNServerRESTAPI.pdf). This option is used with timestamp.\n"
@@ -670,6 +681,7 @@ enum EXTRA_OPTS {
 	MIN_PORT_OPT,
 	MAX_PORT_OPT,
 	STALE_NONCE_OPT,
+	AUTH_URL_OPT,
 	AUTH_SECRET_OPT,
 	DEL_ALL_AUTH_SECRETS_OPT,
 	STATIC_AUTH_SECRET_VAL_OPT,
@@ -764,6 +776,9 @@ static const struct myoption long_options[] = {
 #if !defined(TURN_NO_HIREDIS)
 				{ "redis-userdb", required_argument, NULL, 'N' },
 				{ "redis-statsdb", required_argument, NULL, 'O' },
+#endif
+#if !defined(TURN_NO_AUTH_URL)
+				{ "auth-url", required_argument, NULL, AUTH_URL_OPT },
 #endif
 				{ "use-auth-secret", optional_argument, NULL, AUTH_SECRET_OPT },
 				{ "static-auth-secret", required_argument, NULL, STATIC_AUTH_SECRET_VAL_OPT },
@@ -1163,6 +1178,11 @@ static void set_option(int c, char *value)
 	case 'O':
 		STRCPY(turn_params.redis_statsdb, value);
 		turn_params.use_redis_statsdb = 1;
+		break;
+#endif
+#if !defined(TURN_NO_AUTH_URL)
+	case AUTH_URL_OPT:
+		STRCPY(turn_params.auth_url, value);
 		break;
 #endif
 	case AUTH_SECRET_OPT:
@@ -1667,6 +1687,13 @@ static void print_features(unsigned long mfn)
 #endif
 	}
 
+#if !defined(TURN_NO_AUTH_URL)
+	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "Auth URL is supported\n");
+	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "Auth URL libcurl version: %s\n", auth_url_curl_version());
+#else
+	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "Auth URL is not supported\n");
+#endif
+
 	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "OpenSSL compile-time version: %s (0x%lx)\n",OPENSSL_VERSION_TEXT,OPENSSL_VERSION_NUMBER);
 
 	TURN_LOG_FUNC(TURN_LOG_LEVEL_INFO, "\n");
@@ -1959,6 +1986,10 @@ int main(int argc, char **argv)
 	}
 
 	openssl_setup();
+
+#if !defined(TURN_NO_AUTH_URL)
+	auth_url_setup();
+#endif
 
 	int local_listeners = 0;
 	if (!turn_params.listener.addrs_number) {

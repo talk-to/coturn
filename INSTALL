@@ -240,8 +240,8 @@ you may have to adjust the system-wide shared library search path with
 "ldconfig -n <libdirname>" (Linux), "ldconfig -m <libdirname>" (BSD) or 
 "crle -u -l <libdirname>" (Solaris). Your system must be able to find the 
 libevent2, openssl and (optionally) SQLite and/or PostgreSQL and/or MySQL 
-(MariaDB) and/or MongoDB and/or Redis shared libraries, either with the 
-help of the system-wide library search configuration or by using 
+(MariaDB) and/or MongoDB and/or Redis and/or libcurl shared libraries, either
+with the help of the system-wide library search configuration or by using
 LD_LIBRARY_PATH. "make install" will make a non-guaranteed effort to add 
 automatically PREFIX/lib and /usr/local/lib to the libraries search path, 
 but if you have some libraries in different non-default directories then
@@ -293,14 +293,17 @@ OpenSSL (version 1.0.0a or better recommended) and libevent2 (version 2.0.5
 or better) are required, SQLite C development library and header is optional,
 the PostgreSQL C client development setup is optional, 
 the MySQL (MariaDB) C client development setup is optional, 
-the MongoDB C Driver and the Hiredis development files for Redis database 
-access are all optional. For development build, the development headers and 
+the MongoDB C Driver is optional,
+the Hiredis development files for Redis database are optional,
+and the libcurl (version 7.7.2 or better) development library and
+headers (for AUTH URL support) are optional.
+For development build, the development headers and
 the libraries to link with, are to be installed. For the runtime, only the 
 runtime setup is required. If the build is modified for 
 static linking, then even runtime installation is not needed.
 
-OpenSSL, SQLite, libevent2, PostgreSQL, MySQL (or MariaDB) and Hiredis 
-libraries can be downloaded from their web sites:
+OpenSSL, SQLite, libevent2, PostgreSQL, MySQL (or MariaDB), Hiredis and
+libcurl libraries can be downloaded from their web sites:
  - http://www.openssl.org (required);
  - http://www.libevent.org (required);
  - http://www.sqlite.org (optional);
@@ -308,6 +311,7 @@ libraries can be downloaded from their web sites:
  - http://www.mysql.org (or http://mariadb.org) (optional);
  - https://github.com/mongodb/mongo-c-driver (optional);
  - http://redis.io (optional).
+ - https://curl.haxx.se (optional).
  
 The installations are pretty straightforward - the usual 
 "./configure" and "make install" commands. Install them into their default 
@@ -341,6 +345,8 @@ have a simpler way of the third party tools installation:
 		$ sudo make install clean
 		$ cd /usr/ports/databases/hiredis/
 		$ sudo make install clean
+		$ cd /usr/ports/ftp/curl/
+		$ sudo make install clean
 
 	**) Linux Ubuntu, Debian, Mint:
 		
@@ -352,7 +358,8 @@ have a simpler way of the third party tools installation:
 		$ sudo apt-get install mysql-client
 		$ sudo apt-get install libmysqlclient-dev
 		$ sudo apt-get install libhiredis-dev
-		
+		$ sudo apt-get install libcurl3-dev (or libcurl4-dev)
+
 		or you can use Synaptic or other software center.
 
 	***) Fedora:
@@ -368,6 +375,8 @@ have a simpler way of the third party tools installation:
 	$ sudo yum install mysql-server
 	$ sudo yum install hiredis
 	$ sudo yum install hiredis-devel
+	$ sudo yum install libcurl
+	$ sudo yum install libcurl-devel
 
 	****) Amazon Linux is similar to Fedora, but:
 

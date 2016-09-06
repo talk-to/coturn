@@ -6,7 +6,7 @@ CPWD=`pwd`
 
 # Required packages
 
-PACKS="postgresql-devel hiredis-devel"
+PACKS="postgresql-devel hiredis-devel libcurl-devel"
 
 sudo yum -y install ${PACKS}
 ER=$?
