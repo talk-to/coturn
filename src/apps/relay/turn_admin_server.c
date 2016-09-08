@@ -817,6 +817,7 @@ static void cli_print_configuration(struct cli_session* cs)
 
 #if !defined(TURN_NO_AUTH_URL)
 		cli_print_str(cs, turn_params.auth_url, "AUTH URL", 0);
+		cli_print_flag(cs, turn_params.auth_url_use_post, "AUTH URL - Use HTTP POST instead of GET", 0);
 #endif
 
 		myprintf(cs,"\n");

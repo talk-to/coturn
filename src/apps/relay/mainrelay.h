@@ -301,6 +301,7 @@ typedef struct _turn_params_ {
 /////// Auth URL ///////////
 
   char auth_url[1025];
+  int auth_url_use_post;
 
 /////// CPUs //////////////
 

@@ -129,7 +129,7 @@ LOW_DEFAULT_PORTS_BOUNDARY,HIGH_DEFAULT_PORTS_BOUNDARY,0,0,0,"",
 ///////////// Users DB //////////////
 { (TURN_USERDB_TYPE)0, {"\0"}, {0,NULL, {NULL,0}} },
 ///////////// Auth URL //////////////
-"",
+"",0,
 ///////////// CPUs //////////////////
 DEFAULT_CPUS_NUMBER
 };
@@ -497,6 +497,8 @@ static char Usage[] = "Usage: turnserver [options]\n"
 "						values. The A1 hash contained in the response is used to\n"
 "						compute the HMAC for authentication. See the AUTH URL section for\n"
 "						the request response formats.\n"
+" --auth-url-use-post				Use HTTP POST requests for authentication.\n"
+"						Use HTTP POST requests for \"--auth-url\". Default is to use HTTP GET.\n"
 #endif
 " --use-auth-secret				TURN REST API flag.\n"
 "						Flag that sets a special authorization option that is based upon authentication secret\n"
@@ -682,6 +684,7 @@ enum EXTRA_OPTS {
 	MAX_PORT_OPT,
 	STALE_NONCE_OPT,
 	AUTH_URL_OPT,
+	AUTH_URL_USE_POST_OPT,
 	AUTH_SECRET_OPT,
 	DEL_ALL_AUTH_SECRETS_OPT,
 	STATIC_AUTH_SECRET_VAL_OPT,
@@ -779,6 +782,7 @@ static const struct myoption long_options[] = {
 #endif
 #if !defined(TURN_NO_AUTH_URL)
 				{ "auth-url", required_argument, NULL, AUTH_URL_OPT },
+				{ "auth-url-use-post", optional_argument, NULL, AUTH_URL_USE_POST_OPT },
 #endif
 				{ "use-auth-secret", optional_argument, NULL, AUTH_SECRET_OPT },
 				{ "static-auth-secret", required_argument, NULL, STATIC_AUTH_SECRET_VAL_OPT },
@@ -1183,6 +1187,9 @@ static void set_option(int c, char *value)
 #if !defined(TURN_NO_AUTH_URL)
 	case AUTH_URL_OPT:
 		STRCPY(turn_params.auth_url, value);
+		break;
+	case AUTH_URL_USE_POST_OPT:
+		turn_params.auth_url_use_post = 1;
 		break;
 #endif
 	case AUTH_SECRET_OPT:

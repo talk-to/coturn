@@ -23,14 +23,18 @@ def ha1(user, realm, password):
 class MyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
         params = dict(parse_qsl(urlparse(self.path).query))
-        result = self.ha1(params)
-        self.send_json({"result": result})
-
-    def ha1(self, params):
         user = params["user"]
         realm = params["realm"]
-        h = ha1(user, realm, "youhavetoberealistic")
-        return h
+        result = ha1(user, realm, "youhavetoberealistic")
+        self.send_json({"result": result})
+
+    def do_POST(self):
+        assert self.headers["Content-Type"] == "application/json"
+        params = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+        user = params["auth_user"]
+        realm = params["auth_realm"]
+        result = ha1(user, realm, "youhavetoberealistic")
+        self.send_json({"result": result})
 
     def send_json(self, dict):
         self.send_response(200)

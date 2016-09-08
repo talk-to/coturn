@@ -1,7 +1,11 @@
 #!/bin/sh
 #
-# This is an example of starting a TURN Server with AUTH URL
-# capabilities.
+# Start a TURN Server that uses a HTTP request for authentication.
+#
+# By default, GET requests are used. To use POST instead, start this
+# with the "--auth-url-use-post" flag.
+#
+#     $ bash scripts/authurl/authurl_relay.sh --auth-url-use-post
 #
 # Options:
 #

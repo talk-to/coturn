@@ -183,6 +183,9 @@ Flags:
 			
 --oauth			Support oAuth authentication, as in the third-party STUN/TURN RFC 7635.
 			
+--auth-url-use-post 	Use HTTP POST requests for authentication
+			Use HTTP POST requests for "--auth-url". Default is to use HTTP GET.
+
 --dh566			Use 566 bits predefined DH TLS key. Default size of the key is 1066.
 
 --dh2066		Use 2066 bits predefined DH TLS key. Default size of the key is 1066.
@@ -408,7 +411,7 @@ Options with required values:
 			The default value is the realm name.
 
 --auth-url 	URL to use for obtaining the A1 hash for authentication.
-			If this parameter is specified, then a HTTP GET request is
+			If this parameter is specified, then a HTTP request is
 			made to this URL with the user and realm values. The A1
 			hash contained in the response is used to compute the HMAC
 			for authentication. See the "AUTH URL" section below for
@@ -715,7 +718,20 @@ This feature is enabled if the "--auth-url" option is specified. When
 authentication is required, a GET request is made to the auth URL. The
 "user" and "realm" values are passed as query parameters.
 
-	GET /auth-uri?user=foo&realm=bar HTTP/1.1
+	GET /auth-url?user=foo&realm=bar HTTP/1.1
+	Content-Type: application/json
+
+If the "--auth-url-use-post" flag is specified, then a POST request is
+made instead of the GET request. The "user" and "realm" values are
+passed in the request body, encoded as JSON.
+
+	POST /auth-url HTTP/1.1
+	Content-Type: application/json
+
+	{
+		"auth_user": "foo",
+		"auth_realm": "bar.com"
+	}
 
 The response is expected to be a JSON object with a key named "result"
 containing the hexadecimal representation of the A1 hash.
