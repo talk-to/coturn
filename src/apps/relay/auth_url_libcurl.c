@@ -15,12 +15,12 @@ char *auth_url_curl_version(void)
 	return curl_version();
 }
 
-static const char *turn_params_method()
+static const char *turn_params_method(void)
 {
 	return turn_params.auth_url_use_post ? "POST" : "GET";
 }
 
-void auth_url_setup()
+void auth_url_setup(void)
 {
 	CURLcode res;
 
