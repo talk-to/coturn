@@ -112,6 +112,12 @@ int auth_url_get_user_key(u08bits *usname, u08bits *realm, hmackey_t key)
 		goto skip;
 	}
 
+	headers = curl_slist_append(headers, "Content-Type: application/json");
+	if (!headers) {
+		TURN_LOG_FUNC(TURN_LOG_LEVEL_ERROR, "Could not add \"Content-Type\" header to curl slist\n");
+		goto err;
+	}
+
 	curl = curl_easy_init();
 	if (!curl) {
 		TURN_LOG_FUNC(TURN_LOG_LEVEL_ERROR, "Could not initialize curl handle for authentication of user %s in realm %s\n", usname, realm);
@@ -168,12 +174,6 @@ int auth_url_get_user_key(u08bits *usname, u08bits *realm, hmackey_t key)
 		goto err;
 	}
 
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-	if (!headers) {
-		TURN_LOG_FUNC(TURN_LOG_LEVEL_ERROR, "Could not add \"Content-Type\" header to curl slist\n");
-		goto err;
-	}
-
 	res = curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 	if (res != CURLE_OK) {
 		TURN_LOG_FUNC(TURN_LOG_LEVEL_ERROR, "Could not set HTTP headers for the curl handle %p: %s\n", curl, curl_easy_strerror(res));
@@ -226,9 +226,6 @@ int auth_url_get_user_key(u08bits *usname, u08bits *realm, hmackey_t key)
 	}
 
  err:
-	if (headers) {
-		curl_slist_free_all(headers);
-	}
 	if (user_escaped) {
 		curl_free(user_escaped);
 	}
@@ -237,6 +234,9 @@ int auth_url_get_user_key(u08bits *usname, u08bits *realm, hmackey_t key)
 	}
 	if (curl) {
 		curl_easy_cleanup(curl);
+	}
+	if (headers) {
+		curl_slist_free_all(headers);
 	}
 
  skip:
