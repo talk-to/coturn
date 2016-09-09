@@ -38,7 +38,7 @@ void auth_url_setup(void)
 	}
 }
 
-static const size_t RESPONSE_STRING_SIZE = TURN_LONG_STRING_SIZE;
+#define RESPONSE_STRING_SIZE TURN_LONG_STRING_SIZE
 
 static size_t write_callback(char *ptr, size_t size, size_t nmemb, void *userdata)
 {
